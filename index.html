@@ -1,11 +1,178 @@
+`html
 <!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Перенаправление...</title>
-  <meta http-equiv="refresh" content="0;url=https://www.amazon.com/" />
+  <title>Мини Маркетплейс</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 10px;
+      background: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    #searchForm {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    #searchInput {
+      width: 70%;
+      padding: 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+      outline: none;
+    }
+    #searchButton {
+      padding: 8px 16px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+      border-radius: 0 4px 4px 0;
+      font-size: 16px;
+    }
+    #searchButton:hover {
+      background-color: #0056b3;
+    }
+    #results {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .item {
+      background: white;
+      margin-bottom: 8px;
+      padding: 10px;
+      border-radius: 4px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      box-shadow: 0 0 5px #ccc;
+    }
+    .item img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .item .info {
+      flex-grow: 1;
+    }
+    .item .info h3 {
+      margin: 0 0 5px;
+      font-size: 16px;
+      color: #007bff;
+      cursor: pointer;
+    }
+    .item .info p {
+      margin: 0;
+      font-weight: bold;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-  <p>Если перенаправление не произошло автоматически, нажмите <a href="https://example.com">здесь</a>.</p>
+  <h1>Мини Маркетплейс</h1>
+  <form id="searchForm">
+    <input type="text" id="searchInput" placeholder="Введите название товара" required />
+    <button type="submit" id="searchButton">Найти</button>
+  </form>
+  <div id="results"></div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    Telegram.WebApp.ready();
+
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const resultsDiv = document.getElementById('results');
+
+    // Заглушка - имитация поиска товаров
+    function fakeSearchAPI(query) {
+      // В реальном приложении здесь делай fetch-запрос к API маркетплейса
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          const dummyData = [
+            {
+              id: 1,
+              title: Товар "${query}" - 1,
+              price: "1999 ₽",
+              image: "https://via.placeholder.com/80?text=1",
+              url: "https://example.com/item1"
+            },
+            {
+              id: 2,
+              title: Товар "${query}" - 2,
+              price: "2999 ₽",
+              image: "https://via.placeholder.com/80?text=2",
+              url: "https://example.com/item2"
+            },
+            {
+              id: 3,
+              title: Товар "${query}" - 3,
+              price: "3999 ₽",
+              image: "https://via.placeholder.com/80?text=3",
+              url: "https://example.com/item3"
+            }
+          ];
+          resolve(dummyData);
+        }, 700);
+      });
+    }
+
+    function clearResults() {
+      resultsDiv.innerHTML = '';
+    }
+
+    function renderResults(items) {
+      clearResults();
+      if (items.length === 0) {
+        resultsDiv.innerHTML = '<p>Ничего не найдено.</p>';
+        return;
+      }
+      items.forEach(item => {
+        const itemDiv = document.createElement('div');
+        itemDiv.classList.add('item');
+        const img = document.createElement('img')
+        const title = document.createElement('h3');
+        title.textContent = item.title;
+        title.onclick = () => Telegram.WebApp.openLink(item.url);
+
+        const price = document.createElement('p');
+        price.textContent = item.price;
+
+        infoDiv.appendChild(title);
+        infoDiv.appendChild(price);
+
+        itemDiv.appendChild(img);
+        itemDiv.appendChild(infoDiv);
+
+        resultsDiv.appendChild(itemDiv);
+      });
+    }
+
+    searchForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      if (!query) return;
+      resultsDiv.innerHTML = '<p>Идёт поиск...</p>';
+
+      try {
+        const results = await fakeSearchAPI(query);
+        renderResults(results);
+      } catch (err) {
+        resultsDiv.innerHTML = '<p>Ошибка при поиске.</p>';
+        console.error(err);
+      }
+    });
+
+  </script>
 </body>
 </html>
+`
